@@ -1,0 +1,41 @@
+Bootstrap: docker
+From: centos:centos7.6.1810
+
+%environment
+    export PATH=$PATH:/opt/software/micromamba
+    export PATH=$PATH:/opt/software/conenv/bin
+    export PATH=$PATH:/opt/software/conenv/bin/ViPTreeGen-1.1.3
+    export LANGUAGE=en_US.UTF-8  
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+
+%post
+    yum -y install epel-release wget which nano curl zlib-devel git glibc-langpack-en
+    yum -y groupinstall "Development Tools"
+
+    mkdir -p /opt/software
+    cd /opt/software
+
+    #Downloading mciromamba
+    curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+    mkdir -p /opt/software/micromamba
+    mv ./bin/micromamba /opt/software/micromamba/
+    eval "$(/opt/software/micromamba/micromamba shell hook -s posix)"
+    /opt/software/micromamba/micromamba shell init -s bash -p /opt/software/micromamba/micromamba
+    source ~/.bashrc
+    
+    # Installing tools
+    /opt/software/micromamba/micromamba create -c conda-forge -c bioconda --prefix /opt/software/conenv -y blast=2.14.1 ruby=3.2.2 r-base=4.3.1 r-ape=5.7_1 r-phangorn=2.11.1 parallel
+    
+    # Downloading the ViPTreeGen
+    wget https://github.com/yosuken/ViPTreeGen/archive/refs/tags/v1.1.3.tar.gz
+    tar -xzvf v1.1.3.tar.gz -C /opt/software/conenv/bin
+    
+    cd /opt/software
+    
+    /opt/software/micromamba/micromamba clean -y --all
+
+%runscript
+    . /opt/software/micromamba/micromamba shell hook -s bash -p /opt/software/micromamba/micromamba
+    . /opt/software/micromamba/micromamba activate /opt/software/conenv 
+    exec ViPTreeGen "$@"
