@@ -11,9 +11,9 @@ singularity exec ViPTreeGen__1.1.3.simg ViPTreeGen input.fasta output_dir
 
 or
 
-If following error arises after running the above command
-[error]:  first argument should be a fasta file.
+If the following error arises after running the above command
+[error]: first argument should be a fasta file.
 Then try this
 
-singularity exec -B /path/to/dir/containing/input_file:/mnt ViPTreeGen-1.1.3.img ViPTreeGen --ncpus 30 /mnt/sample.fasta /mnt/test
+singularity exec -B /path/to/dir/containing/input_file:/mnt ViPTreeGen__1.1.3.simg ViPTreeGen --ncpus 30 /mnt/input.fasta /mnt/output_dir
 ```
